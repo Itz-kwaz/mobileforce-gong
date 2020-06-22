@@ -4,17 +4,17 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:team_mobileforce_gong/models/note.dart';
 
-class DbHelper {
-  static final DbHelper _dbHelper = DbHelper._internal();
+class NoteDbhelper {
+  static final NoteDbhelper _dbHelper = NoteDbhelper._internal();
   String tblNotes = "note";
   String colId = "id";
   String colTitle = "title";
   String colDescription = "description";
   String colDate = "date";
 
-  DbHelper._internal();
+  NoteDbhelper._internal();
 
-  factory DbHelper() {
+  factory NoteDbhelper() {
     return _dbHelper;
   }
 

@@ -1,45 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:team_mobileforce_gong/models/todo.dart';
-import 'package:team_mobileforce_gong/util/dbhelper.dart';
+import 'package:team_mobileforce_gong/models/note.dart';
+import 'package:team_mobileforce_gong/util/noteDbhelper.dart';
 import 'package:intl/intl.dart';
 
 
-DbHelper helper = DbHelper();
+ NoteDbhelper helper  = NoteDbhelper();
 final List<String> choices = const <String> [
-  'Save Todo & Back',
-  'Delete Todo',
+  'Save Note & Back',
+  'Delete Note',
   'Back to List'
 ];
 
-const mnuSave = 'Save Todo & Back';
-const mnuDelete = 'Delete Todo';
+const mnuSave = 'Save Note & Back';
+const mnuDelete = 'Delete Note';
 const mnuBack = 'Back to List';
 
-class TodoDetail extends StatefulWidget {
-  final Todo todo;
-  TodoDetail(this.todo);
+class NoteDetail extends StatefulWidget {
+  final Note note;
+  NoteDetail(this.note);
 
   @override
-  State<StatefulWidget> createState() => TodoDetailState(todo);
+  State<StatefulWidget> createState() => NoteDetailState(note);
 
 }
-class TodoDetailState extends State {
-  Todo todo;
-  TodoDetailState(this.todo);
-  final _priorities = ["High", "Medium", "Low"];
-  String _priority = "Low";
+class NoteDetailState extends State {
+  Note note;
+ NoteDetailState(this.note);
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    titleController.text = todo.title;
-    descriptionController.text = todo.description;
+    titleController.text = note.title;
+    descriptionController.text = note.description;
     TextStyle textStyle = Theme.of(context).textTheme.title;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(todo.title),
+        title: Text(note.title),
         actions: <Widget>[
           PopupMenuButton<String>(
             onSelected: select,
@@ -81,17 +79,6 @@ class TodoDetailState extends State {
               )
             ),
           )),
-          ListTile(title:DropdownButton<String>(
-            items: _priorities.map((String value) {
-              return DropdownMenuItem<String> (
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-            style: textStyle,
-            value:retrievePriority(todo.priority),
-            onChanged: (value)=>updatePriority(value),
-          ))
         ],
       )],)
       )
@@ -106,14 +93,14 @@ class TodoDetailState extends State {
         break;
       case mnuDelete:
         Navigator.pop(context, true);
-        if (todo.id == null) {
+        if (note.id == null) {
           return;
         }
-        result = await helper.deleteTodo(todo.id);
+        result = await helper.deleteNote(note.id);
         if (result != 0) {
           AlertDialog alertDialog = AlertDialog(
-            title: Text("Delete Todo"),
-            content: Text("The Todo has been deleted"),
+            title: Text("Delete Note"),
+            content: Text("The Note has been deleted"),
           );
           showDialog(
             context: context,
@@ -129,43 +116,23 @@ class TodoDetailState extends State {
   }
 
   void save() {
-    todo.date = new DateFormat.yMd().format(DateTime.now());
-    if (todo.id != null) {
-      helper.updateTodo(todo);
+    note.date = new DateFormat.yMd().format(DateTime.now());
+    if (note.id != null) {
+      helper.updateNote(note);
     }
     else {
-      helper.insertTodo(todo);
+      helper.insertNote(note);
     }
     Navigator.pop(context, true);
   }
 
-  void updatePriority(String value) {
-    switch (value) {
-      case "High":
-        todo.priority = 1;
-        break;
-      case "Medium":
-        todo.priority = 2;
-        break;
-      case "Low":
-        todo.priority = 3;
-        break;
-    }
-    setState(() {
-          _priority=value;
-        });
-  }
-
-  String retrievePriority(int value) {
-    return _priorities[value-1];
-  }
 
   void updateTitle(){
-    todo.title = titleController.text;
+    note.title = titleController.text;
   }
 
   void updateDescription() {
-    todo.description = descriptionController.text;
+    note.description = descriptionController.text;
   }
 
 }
